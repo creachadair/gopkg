@@ -86,6 +86,32 @@ func (c Client) Search(_ context.Context, query string) ([]*Package, error) {
 	return res.Results, nil
 }
 
+// Imports lists the direct imports of the given package. The query will
+// succeed with no results if the index does not report any dependencies, but
+// note that the index is often incomplete.
+//
+// API: /imports/<import-path>
+func (c Client) Imports(_ context.Context, importPath string) ([]*Package, error) {
+	res, err := c.get(c.makeURL("imports/" + importPath))
+	if err != nil {
+		return nil, err
+	}
+	return res.Imports, nil
+}
+
+// Importers lists those packages that directly depend on the given package.
+// The query will succeed with no results if the index does not report any
+// dependents, but note that the index is often incomplete.
+//
+// API: /importers/<import-path>
+func (c Client) Importers(_ context.Context, importPath string) ([]*Package, error) {
+	res, err := c.get(c.makeURL("importers/" + importPath))
+	if err != nil {
+		return nil, err
+	}
+	return res.Results, nil
+}
+
 // HTTPClient is the subset of the http.Client interface needed by this package.
 type HTTPClient interface {
 	Get(url string) (*http.Response, error)
@@ -99,7 +125,7 @@ const BaseURL = "https://api.godoc.org"
 // Cloned from https://pkg.go.dev/github.com/golang/gddo/database#Package.
 type Package struct {
 	Name        string  `json:"name,omitempty"`
-	Path        string  `json:"path"`
+	ImportPath  string  `json:"path"`
 	ImportCount int     `json:"import_count"`
 	Synopsis    string  `json:"synopsis,omitempty"`
 	IsFork      bool    `json:"fork,omitempty"`
@@ -113,6 +139,7 @@ type Package struct {
 // queryResult is the top-level wrapper for responses from the JSON API.
 type queryResult struct {
 	Results []*Package  `json:"results"`
+	Imports []*Package  `json:"imports"`
 	Error   *queryError `json:"error"`
 }
 
