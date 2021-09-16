@@ -2,12 +2,17 @@ package gopkg_test
 
 import (
 	"context"
+	"flag"
 	"testing"
 
 	"github.com/creachadair/gopkg"
 )
 
-var testClient gopkg.Client
+var (
+	doLive = flag.Bool("live", false, "Run tests against the live API")
+
+	testClient gopkg.Client
+)
 
 func logPackages(t *testing.T, pkgs []*gopkg.Package) {
 	t.Helper()
@@ -18,6 +23,9 @@ func logPackages(t *testing.T, pkgs []*gopkg.Package) {
 }
 
 func TestMethods(t *testing.T) {
+	if !*doLive {
+		t.Skip("Skipping test because -live=false")
+	}
 	ctx := context.Background()
 	t.Run("Search", func(t *testing.T) {
 		pkgs, err := testClient.Search(ctx, "net/http")
