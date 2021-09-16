@@ -14,6 +14,13 @@ import (
 	"net/url"
 )
 
+// Endpoints:
+// https://github.com/golang/gddo/blob/master/gddo-server/main.go#L934-L937
+//
+// The mondo /packages endpoint isn't implemented here.  It basically returns
+// the entire package index in a single JSON blob. This works fine, but is slow
+// and doesn't have much practical purpose. Just use curl if you need that.
+
 // Client holds the settings to communicate with the godoc.org service.
 // A zero Client is ready for use and provides default settings.
 type Client struct {
