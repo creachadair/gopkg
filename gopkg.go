@@ -9,7 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -45,7 +45,7 @@ func (c Client) get(url string) (*queryResult, error) {
 	if err != nil {
 		return nil, fmt.Errorf("calling service: %w", err)
 	}
-	data, err := ioutil.ReadAll(rsp.Body)
+	data, err := io.ReadAll(rsp.Body)
 	rsp.Body.Close()
 	if err != nil {
 		return nil, err
